@@ -10,71 +10,110 @@ class Graph:
         self.vertices = {}
 
     def add_vertex(self, vertex_id):
-        """
-        Add a vertex to the graph.
-        """
-        pass  # TODO
+        self.vertices[vertex_id] = set()
 
     def add_edge(self, v1, v2):
-        """
-        Add a directed edge to the graph.
-        """
-        pass  # TODO
+        self.vertices[v1].add(v2)
 
     def get_neighbors(self, vertex_id):
-        """
-        Get all neighbors (edges) of a vertex.
-        """
-        pass  # TODO
+        neighbors = set()
+        for edge in self.vertices[vertex_id]:
+            neighbors.add(edge)
+        return neighbors
 
     def bft(self, starting_vertex):
-        """
-        Print each vertex in breadth-first order
-        beginning from starting_vertex.
-        """
-        pass  # TODO
+        used = set() # Keep track of already used vertices
+        q = Queue() # Make a Queue
+        q.enqueue(starting_vertex)
+        used.add(starting_vertex)
+        while q.size() > 0:
+            node_index = q.dequeue() # Get current node
+            node_current = self.vertices[node_index]
+            print(node_index)
+            for neighbor in node_current:  # Go through all unused neighbors
+                if neighbor not in used:
+                    q.enqueue(neighbor) # Enqueue vertex
+                    used.add(neighbor)
 
     def dft(self, starting_vertex):
-        """
-        Print each vertex in depth-first order
-        beginning from starting_vertex.
-        """
-        pass  # TODO
+        used = set() # Keep track of already used vertices
+        st = Stack() # Make a Stack
+        st.push(starting_vertex) # Push starting vertex
+        used.add(starting_vertex)
+        while st.size() > 0:
+            node_index = st.pop() # Get current node
+            node_current = self.vertices[node_index]
+            print(node_index)
+            for neighbor in node_current:  # Go through all unused neighbors
+                if neighbor not in used:
+                    st.push(neighbor) # Push vertex
+                    used.add(neighbor)
 
-    def dft_recursive(self, starting_vertex):
-        """
-        Print each vertex in depth-first order
-        beginning from starting_vertex.
-
-        This should be done using recursion.
-        """
-        pass  # TODO
+    def dft_recursive(self, vertex_id, used=None):
+        if used == None: # Make new used set if not one (initial call)
+            used = set()
+            used.add(vertex_id)
+        node_current = self.vertices[vertex_id] # Get current node
+        print(vertex_id)
+        for neighbor in node_current:  # Go through all unused neighbors
+            if neighbor not in used:
+                used.add(neighbor)
+                self.dft_recursive(neighbor, used) # Pass through used set
 
     def bfs(self, starting_vertex, destination_vertex):
-        """
-        Return a list containing the shortest path from
-        starting_vertex to destination_vertex in
-        breath-first order.
-        """
-        pass  # TODO
+        used = set() # Keep track of already used vertices
+        q = Queue() # Make a Queue
+        q.enqueue((starting_vertex, [])) # Enqueue vertex with list of path travelled
+        used.add(starting_vertex)
+        while q.size() > 0:
+            node = q.dequeue() # Get current node
+            node_index = node[0]
+            node_path = node[1].copy()
+            node_current = self.vertices[node_index] 
+            node_path.append(node_index) # Add current vertex to path
+            if node_index == destination_vertex: 
+                return node_path
+            for neighbor in node_current: # Go through all unused neighbors
+                if neighbor not in used:
+                    q.enqueue((neighbor, node_path)) # Enqueue vertex with list of path travelled
+                    used.add(neighbor)
+        return None
 
     def dfs(self, starting_vertex, destination_vertex):
-        """
-        Return a list containing a path from
-        starting_vertex to destination_vertex in
-        depth-first order.
-        """
-        pass  # TODO
+        used = set() # Keep track of already used vertices with list of path travelled
+        st = Stack() # Make a Stack
+        st.push((starting_vertex, [])) # Push starting vertex
+        used.add(starting_vertex)
+        while st.size() > 0:
+            node = st.pop() # Get current node
+            node_index = node[0]
+            node_path = node[1].copy()
+            node_current = self.vertices[node_index] 
+            node_path.append(node_index) # Add current vertex to path
+            if node_index == destination_vertex: # Return if at destination
+                return node_path
+            for neighbor in node_current:  # Go through all unused neighbors
+                if neighbor not in used:
+                    st.push((neighbor, node_path)) # Push vertex with list of path travelled
+                    used.add(neighbor)
+        return None
 
-    def dfs_recursive(self, starting_vertex, destination_vertex):
-        """
-        Return a list containing a path from
-        starting_vertex to destination_vertex in
-        depth-first order.
-
-        This should be done using recursion.
-        """
-        pass  # TODO
+    def dfs_recursive(self, vertex_id, destination_vertex, node_path_orig=[], used=None):
+        if used == None: # Make new used set if not one (initial call)
+            used = set()
+            used.add(vertex_id)
+        node_current = self.vertices[vertex_id] # Get current node
+        node_path = node_path_orig.copy()
+        node_path.append(vertex_id) # Add current vertex to path
+        if vertex_id == destination_vertex: # Return if at destination
+            return node_path
+        for neighbor in node_current:  # Go through all unused neighbors
+            if neighbor not in used:
+                used.add(neighbor)
+                node_path = self.dfs_recursive(neighbor, destination_vertex, node_path, used) # Pass through used set
+                if node_path[-1] == destination_vertex: # Return list if found the solution
+                    return node_path
+        return node_path_orig # Default returning original list
 
 if __name__ == '__main__':
     graph = Graph()  # Instantiate your graph
